@@ -1,0 +1,83 @@
+function art {
+    param(
+        [Parameter(Mandatory=$false, Position=0)]
+        [string]$Command,
+        
+        [Parameter(Mandatory=$false, ValueFromRemainingArguments=$true)]
+        [string[]]$Arguments
+    )
+    
+    if ($Command) {
+        $fullCommand = "php artisan $Command $Arguments"
+        Invoke-Expression $fullCommand
+    } else {
+        php artisan
+    }
+}
+
+function art:routes {
+    clear
+    php artisan route:list
+}
+
+function art:mk-cont {
+    php artisan make:controller param($Name)
+}
+
+function art:mk-mod {
+    php artisan make:model param($Name)
+}
+
+function art:mk-class {
+    php artisan make:class param($Name)
+}
+
+function art:mk-intrf {
+    php artisan make:interface param($Name)
+}
+
+function art:mk-mig {
+    php artisan make:migration param($Name)
+}
+
+function art:mig-back {
+    php artisan migrate:rollback
+}
+
+function art:mig-status {
+    clear
+    php artisan migrate:status
+}
+
+function art:mk-mig {
+    param($Name)
+    php artisan make:migration $Name
+}
+
+function art:mk-mig-m {
+    param($Name)
+    php artisan make:model $Name -m
+}
+
+function art:opt {
+    clear
+    php artisan optimize:clear
+}
+
+function art:clear-all {
+    clear
+    php artisan config:clear
+    php artisan cache:clear
+    php artisan view:clear
+    php artisan route:clear
+}
+
+function art:dump-all {
+    clear
+    composer dump-autoload
+    php artisan optimize:clear
+    php artisan config:clear
+    php artisan cache:clear
+    php artisan view:clear
+    php artisan route:clear
+}
