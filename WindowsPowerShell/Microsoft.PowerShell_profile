@@ -1,83 +1,139 @@
+<#
+.SYNOPSIS
+    Laravel Artisan PowerShell Helper - Provides convenient PowerShell functions for Laravel Artisan commands
+
+.DESCRIPTION
+    This script creates PowerShell aliases and helper functions for common Laravel Artisan commands,
+    making development workflow more efficient and intuitive.
+
+.AUTHOR
+    Shehzad Shafi
+
+.VERSION
+    1.0
+#>
+
+# Main Artisan wrapper function - handles any Artisan command
 function art {
     param(
         [Parameter(Mandatory=$false, Position=0)]
-        [string]$Command,
+        [string]$Command,  # The Artisan command to execute (e.g., 'make:controller')
         
         [Parameter(Mandatory=$false, ValueFromRemainingArguments=$true)]
-        [string[]]$Arguments
+        [string[]]$Arguments  # Additional arguments for the Artisan command
     )
     
+    # If a specific command is provided, execute it with arguments
     if ($Command) {
         $fullCommand = "php artisan $Command $Arguments"
+        Write-Host "Executing: $fullCommand" -ForegroundColor Yellow
         Invoke-Expression $fullCommand
     } else {
+        # If no command provided, show Artisan help
+        Write-Host "Showing Laravel Artisan help:" -ForegroundColor Green
         php artisan
     }
 }
 
+# Clear screen and show route list
 function art:routes {
     clear
+    Write-Host "Listing all application routes:" -ForegroundColor Green
     php artisan route:list
 }
 
+# Controller creation helper
 function art:mk-cont {
-    php artisan make:controller param($Name)
+    param($Name)  # Name of the controller to create
+    Write-Host "Creating controller: $Name" -ForegroundColor Green
+    php artisan make:controller $Name
 }
 
+# Model creation helper
 function art:mk-mod {
-    php artisan make:model param($Name)
+    param($Name)  # Name of the model to create
+    Write-Host "Creating model: $Name" -ForegroundColor Green
+    php artisan make:model $Name
 }
 
+# Class creation helper
 function art:mk-class {
-    php artisan make:class param($Name)
+    param($Name)  # Name of the class to create
+    Write-Host "Creating class: $Name" -ForegroundColor Green
+    php artisan make:class $Name
 }
 
+# Interface creation helper
 function art:mk-intrf {
-    php artisan make:interface param($Name)
+    param($Name)  # Name of the interface to create
+    Write-Host "Creating interface: $Name" -ForegroundColor Green
+    php artisan make:interface $Name
 }
 
+# Migration creation helper
 function art:mk-mig {
-    php artisan make:migration param($Name)
-}
-
-function art:mig-back {
-    php artisan migrate:rollback
-}
-
-function art:mig-status {
-    clear
-    php artisan migrate:status
-}
-
-function art:mk-mig {
-    param($Name)
+    param($Name)  # Name/description for the migration
+    Write-Host "Creating migration: $Name" -ForegroundColor Green
     php artisan make:migration $Name
 }
 
+# Rollback last migration batch
+function art:mig-back {
+    Write-Host "Rolling back last migration batch..." -ForegroundColor Yellow
+    php artisan migrate:rollback
+}
+
+# Clear screen and show migration status
+function art:mig-status {
+    clear
+    Write-Host "Checking migration status:" -ForegroundColor Green
+    php artisan migrate:status
+}
+
+# Create model with migration
 function art:mk-mig-m {
-    param($Name)
+    param($Name)  # Name of the model (migration will be auto-created)
+    Write-Host "Creating model with migration: $Name" -ForegroundColor Green
     php artisan make:model $Name -m
 }
 
+# Optimize application
 function art:opt {
     clear
+    Write-Host "Clearing optimized files..." -ForegroundColor Yellow
     php artisan optimize:clear
 }
 
+# Clear all cached data
 function art:clear-all {
     clear
+    Write-Host "Clearing all application caches..." -ForegroundColor Yellow
     php artisan config:clear
     php artisan cache:clear
     php artisan view:clear
     php artisan route:clear
 }
 
+# Comprehensive cleanup and optimization
 function art:dump-all {
     clear
+    Write-Host "Performing comprehensive application cleanup..." -ForegroundColor Cyan
+    
+    # Clear Composer autoload
+    Write-Host "Clearing Composer autoload..." -ForegroundColor Yellow
     composer dump-autoload
+    
+    # Clear Laravel caches
+    Write-Host "Clearing Laravel caches..." -ForegroundColor Yellow
     php artisan optimize:clear
     php artisan config:clear
     php artisan cache:clear
     php artisan view:clear
     php artisan route:clear
+    
+    Write-Host "Cleanup completed successfully!" -ForegroundColor Green
 }
+
+# Display available commands when script is loaded
+Write-Host "Laravel Artisan PowerShell Helper loaded!" -ForegroundColor Green
+Write-Host "Available commands: art, art:routes, art:mk-cont, art:mk-mod, art:mk-class, art:mk-intrf, art:mk-mig, art:mig-back, art:mig-status, art:mk-mig-m, art:opt, art:clear-all, art:dump-all" -ForegroundColor Cyan
