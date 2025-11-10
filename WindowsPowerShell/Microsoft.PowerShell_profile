@@ -8,9 +8,6 @@
 
 .AUTHOR
     Shehzad Shafi
-
-.VERSION
-    1.0
 #>
 
 # Main Artisan wrapper function - handles any Artisan command
@@ -35,10 +32,20 @@ function art {
     }
 }
 
-# Clear screen and show route list
-function art:routes {
+# Generate Application Key
+function art:gen-key { 
+    php artisan key:generate
+}
+
+# Serve Laravel Application
+function art:serve {
     clear
-    Write-Host "Listing all application routes:" -ForegroundColor Green
+    php artisan serve
+}
+
+# Get Routes List
+function art:route-list {
+    clear
     php artisan route:list
 }
 
@@ -56,18 +63,11 @@ function art:mk-mod {
     php artisan make:model $Name
 }
 
-# Class creation helper
-function art:mk-class {
-    param($Name)  # Name of the class to create
-    Write-Host "Creating class: $Name" -ForegroundColor Green
-    php artisan make:class $Name
-}
-
-# Interface creation helper
-function art:mk-intrf {
-    param($Name)  # Name of the interface to create
-    Write-Host "Creating interface: $Name" -ForegroundColor Green
-    php artisan make:interface $Name
+# Create model with migration
+function art:mk-mig-m {
+    param($Name)  # Name of the model (migration will be auto-created)
+    Write-Host "Creating model with migration: $Name" -ForegroundColor Green
+    php artisan make:model $Name -m
 }
 
 # Migration creation helper
@@ -77,10 +77,9 @@ function art:mk-mig {
     php artisan make:migration $Name
 }
 
-# Rollback last migration batch
-function art:mig-back {
-    Write-Host "Rolling back last migration batch..." -ForegroundColor Yellow
-    php artisan migrate:rollback
+# Run migrations
+function art:mig { 
+    php artisan migrate
 }
 
 # Clear screen and show migration status
@@ -90,11 +89,21 @@ function art:mig-status {
     php artisan migrate:status
 }
 
-# Create model with migration
-function art:mk-mig-m {
-    param($Name)  # Name of the model (migration will be auto-created)
-    Write-Host "Creating model with migration: $Name" -ForegroundColor Green
-    php artisan make:model $Name -m
+# Rollback migrations
+function art:mig-back {
+    php artisan migrate:rollback $args
+}
+
+# Fresh migration with seed
+function art:mig-f-seed {
+    php artisan migrate:fresh --seed
+}
+
+# Seeding database table
+function art:seed { 
+    clear
+    Write-Host "Seeding database tabels..." -ForegroundColor Yellow
+    php artisan db:seed
 }
 
 # Optimize application
@@ -134,6 +143,10 @@ function art:dump-all {
     Write-Host "Cleanup completed successfully!" -ForegroundColor Green
 }
 
-# Display available commands when script is loaded
-Write-Host "Laravel Artisan PowerShell Helper loaded!" -ForegroundColor Green
-Write-Host "Available commands: art, art:routes, art:mk-cont, art:mk-mod, art:mk-class, art:mk-intrf, art:mk-mig, art:mig-back, art:mig-status, art:mk-mig-m, art:opt, art:clear-all, art:dump-all" -ForegroundColor Cyan
+# Cache configuration and routes
+function art:cache {
+    clear
+    Write-Host "Cashing application ..." -ForegroundColor Yellow
+    php artisan config:cache
+    php artisan route:cache
+}
